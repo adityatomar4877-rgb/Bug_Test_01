@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Login — SkillForge{% endblock %}
+
+{% block content %}
+<section class="auth-wrap">
+    <div class="auth-card card">
+        <div class="auth-head">
+            <span class="brand-mark">SF</span>
+            <h1>Welcome back</h1>
+            <p class="muted">Log in to continue learning.</p>
+        </div>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-error">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <label class="muted small">Username or Email</label>
+            <input type="text" name="username" value="{{ form.username.value|default:'' }}" placeholder="username or email" autocomplete="username" required>
+            <label class="muted small">Password</label>
+            <input type="password" name="password" placeholder="password" autocomplete="current-password" required>
+            <button type="submit" class="btn btn-primary btn-block">Log in</button>
+        </form>
+        <p class="muted small center auth-foot">New here? <a href="{% url 'accounts:register' %}">Create an account</a></p>
+    </div>
+</section>
+{% endblock %}

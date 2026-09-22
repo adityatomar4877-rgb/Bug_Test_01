@@ -1,0 +1,45 @@
+{% load static %}
+<article class="course-card">
+    <a href="{% url 'courses:course_detail' slug=course.slug %}" class="course-thumb">
+        {% if course.thumbnail %}
+            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+        {% else %}
+            <div class="course-thumb-placeholder" data-category="{{ course.category }}">
+                <span class="thumb-initial">{{ course.title|first|upper }}</span>
+                <span class="thumb-cat">{{ course.category }}</span>
+            </div>
+        {% endif %}
+        {% if course.is_free %}
+            <span class="badge badge-free">Free</span>
+        {% elif course.discount_price and course.discount_price > 0 %}
+            <span class="badge badge-discount">Discounted</span>
+        {% endif %}
+    </a>
+    <div class="course-body">
+        <div class="course-meta">
+            <span class="chip">{{ course.category }}</span>
+            <span class="course-duration">{{ course.duration }}</span>
+        </div>
+        <h3 class="course-title">
+            <a href="{% url 'courses:course_detail' slug=course.slug %}">{{ course.title }}</a>
+        </h3>
+        <p class="course-instructor">by {{ course.instructor }}</p>
+        <div class="course-rating">
+            <span class="stars">{% if course.rating_count %}{{ course.average_rating|floatformat:1 }}{% else %}New{% endif %}</span>
+            <span class="muted small">{{ course.rating_count }} review{{ course.rating_count|pluralize }}</span>
+            <span class="dot-sep"></span>
+            <span class="muted small">{{ course.student_count }} student{{ course.student_count|pluralize }}</span>
+        </div>
+        <div class="course-price-row">
+            {% if course.is_free %}
+                <span class="price-now">Free</span>
+            {% else %}
+                <span class="price-now">₹{{ course.effective_price|floatformat:0 }}</span>
+                {% if course.discount_price and course.discount_price > 0 %}
+                    <span class="price-was">₹{{ course.price|floatformat:0 }}</span>
+                {% endif %}
+            {% endif %}
+        </div>
+        <a href="{% url 'courses:course_detail' slug=course.slug %}" class="btn btn-soft btn-block">View Course</a>
+    </div>
+</article>

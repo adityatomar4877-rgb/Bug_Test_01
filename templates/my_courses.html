@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}My Learning — SkillForge{% endblock %}
+
+{% block content %}
+<section class="container section">
+    <div class="dash-head">
+        <div>
+            <h1>My Learning</h1>
+            <p class="muted">All the courses you've enrolled in.</p>
+        </div>
+        <a href="{% url 'courses:course_list' %}" class="btn btn-primary btn-sm">Browse courses</a>
+    </div>
+
+    <div class="dash-courses">
+        {% for enrollment in enrollments %}
+            <article class="dash-course card">
+                <div class="dash-course-top">
+                    <span class="chip">{{ enrollment.course.category }}</span>
+                    {% if enrollment.completed %}
+                        <span class="badge badge-green">Completed</span>
+                    {% endif %}
+                </div>
+                <h3>{{ enrollment.course.title }}</h3>
+                <p class="muted small">by {{ enrollment.course.instructor }}</p>
+                <div class="progress-wrap">
+                    <div class="progress-bar"><span style="width: {{ enrollment.progress }}%"></span></div>
+                    <span class="muted small">{{ enrollment.progress }}%</span>
+                </div>
+                <a href="{% url 'courses:course_learn' slug=enrollment.course.slug %}" class="btn btn-soft btn-block btn-sm">Continue Learning</a>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <h3>No courses yet</h3>
+                <p class="muted">You haven't enrolled in any courses yet.</p>
+                <a href="{% url 'courses:course_list' %}" class="btn btn-primary">Explore Courses</a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

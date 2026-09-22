@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Register — SkillForge{% endblock %}
+
+{% block content %}
+<section class="auth-wrap">
+    <div class="auth-card card">
+        <div class="auth-head">
+            <span class="brand-mark">SF</span>
+            <h1>Create your account</h1>
+            <p class="muted">Start learning in minutes.</p>
+        </div>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-error">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <label class="muted small">Username</label>
+            <input type="text" name="username" value="{{ form.username.value|default:'' }}" placeholder="choose a username" autocomplete="username" required>
+            {% for err in form.username.errors %}<div class="field-error">{{ err }}</div>{% endfor %}
+            <label class="muted small">Email</label>
+            <input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="you@example.com" autocomplete="email" required>
+            {% for err in form.email.errors %}<div class="field-error">{{ err }}</div>{% endfor %}
+            <label class="muted small">Password</label>
+            <input type="password" name="password1" placeholder="password" autocomplete="new-password" required>
+            {% for err in form.password1.errors %}<div class="field-error">{{ err }}</div>{% endfor %}
+            <label class="muted small">Confirm Password</label>
+            <input type="password" name="password2" placeholder="confirm password" autocomplete="new-password" required>
+            {% for err in form.password2.errors %}<div class="field-error">{{ err }}</div>{% endfor %}
+            <button type="submit" class="btn btn-primary btn-block">Create account</button>
+        </form>
+        <p class="muted small center auth-foot">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+    </div>
+</section>
+{% endblock %}

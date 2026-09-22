@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}All Courses — SkillForge{% endblock %}
+
+{% block content %}
+<section class="page-head">
+    <div class="container">
+        <h1>All Courses</h1>
+        <p class="muted">Find the right course for your goals.</p>
+    </div>
+</section>
+
+<section class="container">
+    <form method="get" class="filter-bar" id="courseFilters">
+        <div class="search-box">
+            <input type="text" name="q" value="{{ q|default:'' }}" placeholder="Search courses by title..." aria-label="Search courses">
+        </div>
+        <div class="select-group">
+            <label class="muted small">Category</label>
+            <select name="category" id="categorySelect">
+                <option value="All" {% if selected_category == 'All' %}selected{% endif %}>All</option>
+                <option value="Python" {% if selected_category == 'Python' %}selected{% endif %}>Python</option>
+                <option value="Web Development" {% if selected_category == 'Web Development' %}selected{% endif %}>Web Development</option>
+                <option value="JavaScript" {% if selected_category == 'JavaScript' %}selected{% endif %}>JavaScript</option>
+                <option value="Cyber Security" {% if selected_category == 'Cyber Security' %}selected{% endif %}>Cyber Security</option>
+                <option value="AI" {% if selected_category == 'AI' %}selected{% endif %}>AI</option>
+                <option value="Data Science" {% if selected_category == 'Data Science' %}selected{% endif %}>Data Science</option>
+                <option value="UI/UX" {% if selected_category == 'UI/UX' %}selected{% endif %}>UI/UX</option>
+            </select>
+        </div>
+        <div class="select-group">
+            <label class="muted small">Price</label>
+            <select name="price" id="priceSelect">
+                <option value="all" {% if selected_price == 'all' %}selected{% endif %}>All</option>
+                <option value="free" {% if selected_price == 'free' %}selected{% endif %}>Free</option>
+                <option value="under500" {% if selected_price == 'under500' %}selected{% endif %}>Under ₹500</option>
+                <option value="500to1000" {% if selected_price == '500to1000' %}selected{% endif %}>₹500 - ₹1000</option>
+                <option value="above1000" {% if selected_price == 'above1000' %}selected{% endif %}>Above ₹1000</option>
+            </select>
+        </div>
+        <div class="select-group">
+            <label class="muted small">Sort</label>
+            <select name="sort" id="sortSelect">
+                <option value="popular" {% if selected_sort == 'popular' %}selected{% endif %}>Most Popular</option>
+                <option value="price_low" {% if selected_sort == 'price_low' %}selected{% endif %}>Price: Low → High</option>
+                <option value="price_high" {% if selected_sort == 'price_high' %}selected{% endif %}>Price: High → Low</option>
+                <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>Newest</option>
+                <option value="rating" {% if selected_sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+        <a href="{% url 'courses:course_list' %}" class="btn btn-ghost btn-sm">Reset</a>
+    </form>
+
+    <p class="result-count muted small">{{ courses|length }} course{{ courses|length|pluralize }} found</p>
+
+    <div class="course-grid">
+        {% for course in courses %}
+            {% include '_course_card.html' %}
+        {% empty %}
+            <div class="empty-state">
+                <h3>No courses match your filters</h3>
+                <p class="muted">Try adjusting your search or filters.</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

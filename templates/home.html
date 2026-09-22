@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="hero">
+    <div class="container hero-inner">
+        <div class="hero-copy">
+            <span class="eyebrow">Online learning platform</span>
+            <h1>Master skills that move you forward.</h1>
+            <p class="lead">Learn practical skills from carefully designed online courses. Build real projects, track your progress, and grow your career.</p>
+            <div class="hero-actions">
+                <a href="{% url 'courses:course_list' %}" class="btn btn-primary">Explore Courses</a>
+                <a href="{% url 'accounts:register' %}" class="btn btn-ghost">Join free</a>
+            </div>
+            <div class="hero-stats">
+                <div><strong>12+</strong> courses</div>
+                <div><strong>10k+</strong> learners</div>
+                <div><strong>4.7</strong> avg rating</div>
+            </div>
+        </div>
+        <div class="hero-card">
+            <div class="hero-card-glow"></div>
+            <div class="hero-card-title">
+                <span class="brand-mark lg">SF</span>
+                <div>
+                    <p class="muted small">Featured path</p>
+                    <strong>Python → Data Science</strong>
+                </div>
+            </div>
+            <ul class="hero-card-list">
+                <li><span class="dot"></span> Python Programming Masterclass</li>
+                <li><span class="dot"></span> Data Science with Python</li>
+                <li><span class="dot"></span> Machine Learning Fundamentals</li>
+            </ul>
+            <div class="hero-card-foot">
+                <span class="muted small">Hands-on projects</span>
+                <span class="badge badge-green">Beginner friendly</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container section">
+    <div class="section-head">
+        <div>
+            <h2>Popular Courses</h2>
+            <p class="muted">Hand-picked courses learners love.</p>
+        </div>
+        <a href="{% url 'courses:course_list' %}" class="btn btn-ghost btn-sm">View all</a>
+    </div>
+    <div class="course-grid">
+        {% for course in courses %}
+            {% include '_course_card.html' %}
+        {% empty %}
+            <p class="muted">No courses available yet.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="container section">
+    <div class="feature-grid">
+        <div class="feature">
+            <div class="feature-icon">01</div>
+            <h3>Learn by doing</h3>
+            <p class="muted">Every course includes hands-on lessons and real projects.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">02</div>
+            <h3>Track progress</h3>
+            <p class="muted">Mark lessons complete and watch your progress grow.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">03</div>
+            <h3>From experts</h3>
+            <p class="muted">Courses designed by working professionals.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

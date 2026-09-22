@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.title }} — Learning{% endblock %}
+
+{% block content %}
+<section class="learn-layout container">
+    <aside class="learn-sidebar card">
+        <div class="learn-sidebar-head">
+            <span class="chip">{{ course.category }}</span>
+            <h2>{{ course.title }}</h2>
+            <div class="progress-wrap">
+                <div class="progress-bar"><span style="width: {{ enrollment.progress }}%"></span></div>
+                <span class="muted small">{{ enrollment.progress }}% complete</span>
+            </div>
+        </div>
+        <ul class="learn-lesson-list">
+            {% for lesson in lessons %}
+                <li class="{% if current_lesson and current_lesson.id == lesson.id %}active{% endif %}">
+                    <a href="{% url 'courses:course_learn_lesson' slug=course.slug lesson_id=lesson.id %}">
+                        <span class="lesson-order">
+                            {% if lesson.id in completed_ids %}
+                                <span class="check">✓</span>
+                            {% else %}
+                                {{ forloop.counter }}
+                            {% endif %}
+                        </span>
+                        <span class="lesson-name">{{ lesson.title }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    <div class="learn-main">
+        {% if current_lesson %}
+            <div class="learn-video">
+                <div class="video-placeholder">
+                    <span class="play">▶</span>
+                    <p class="muted">Video: {{ current_lesson.video_url }}</p>
+                </div>
+            </div>
+            <div class="learn-content card">
+                <div class="learn-content-head">
+                    <div>
+                        <span class="muted small">Lesson</span>
+                        <h1>{{ current_lesson.title }}</h1>
+                    </div>
+                    {% if current_lesson.id in completed_ids %}
+                        <span class="badge badge-green">Completed</span>
+                    {% endif %}
+                </div>
+                <p>{{ current_lesson.description }}</p>
+
+                <div class="learn-actions">
+                    {% if current_lesson.id in completed_ids %}
+                        <span class="muted">You've completed this lesson.</span>
+                    {% else %}
+                        <form method="post" action="{% url 'courses:mark_complete' lesson_id=current_lesson.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Mark as Complete</button>
+                        </form>
+                    {% endif %}
+                    {% if current_lesson.id != lessons.last.id %}
+                        <a href="{% url 'courses:course_learn_lesson' slug=course.slug lesson_id=lessons.last.id %}" class="btn btn-ghost">Skip to last</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="card"><p class="muted">This course does not have any lessons yet.</p></div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

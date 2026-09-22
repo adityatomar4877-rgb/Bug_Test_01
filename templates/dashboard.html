@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — SkillForge{% endblock %}
+
+{% block content %}
+<section class="container section">
+    <div class="dash-head">
+        <div>
+            <h1>{{ greeting }}, {{ user.username }}</h1>
+            <p class="muted">Continue your learning journey.</p>
+        </div>
+        <a href="{% url 'courses:course_list' %}" class="btn btn-primary btn-sm">Browse courses</a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card card">
+            <span class="muted small">Courses Enrolled</span>
+            <strong class="stat-num">{{ total_enrolled }}</strong>
+        </div>
+        <div class="stat-card card">
+            <span class="muted small">Courses Completed</span>
+            <strong class="stat-num">{{ total_completed }}</strong>
+        </div>
+        <div class="stat-card card">
+            <span class="muted small">Learning Progress</span>
+            <strong class="stat-num">{{ avg_progress }}%</strong>
+        </div>
+    </div>
+
+    <div class="section-head">
+        <h2>Continue Learning</h2>
+    </div>
+
+    <div class="dash-courses">
+        {% for enrollment in enrollments %}
+            <article class="dash-course card">
+                <div class="dash-course-top">
+                    <span class="chip">{{ enrollment.course.category }}</span>
+                    {% if enrollment.completed %}
+                        <span class="badge badge-green">Completed</span>
+                    {% endif %}
+                </div>
+                <h3>{{ enrollment.course.title }}</h3>
+                <p class="muted small">by {{ enrollment.course.instructor }}</p>
+                <div class="progress-wrap">
+                    <div class="progress-bar"><span style="width: {{ enrollment.progress }}%"></span></div>
+                    <span class="muted small">{{ enrollment.progress }}%</span>
+                </div>
+                <a href="{% url 'courses:course_learn' slug=enrollment.course.slug %}" class="btn btn-soft btn-block btn-sm">Continue Learning</a>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <h3>No courses yet</h3>
+                <p class="muted">You haven't enrolled in any courses. Explore the catalog to get started.</p>
+                <a href="{% url 'courses:course_list' %}" class="btn btn-primary">Explore Courses</a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

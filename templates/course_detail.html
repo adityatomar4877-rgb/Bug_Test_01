@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.title }} — SkillForge{% endblock %}
+
+{% block content %}
+<section class="course-detail-hero">
+    <div class="container course-detail-top">
+        <div class="course-detail-copy">
+            <span class="chip">{{ course.category }}</span>
+            <h1>{{ course.title }}</h1>
+            <p class="lead">{{ course.description }}</p>
+            <div class="course-detail-meta">
+                <span>by <strong>{{ course.instructor }}</strong></span>
+                <span class="dot-sep"></span>
+                <span class="stars">{% if course.rating_count %}{{ course.average_rating|floatformat:1 }} ★{% else %}New{% endif %}</span>
+                <span class="muted small">({{ course.rating_count }} review{{ course.rating_count|pluralize }})</span>
+                <span class="dot-sep"></span>
+                <span class="muted small">{{ course.student_count }} student{{ course.student_count|pluralize }}</span>
+                <span class="dot-sep"></span>
+                <span class="muted small">{{ course.duration }}</span>
+            </div>
+        </div>
+        <aside class="course-buy-card">
+            <div class="course-thumb-placeholder lg" data-category="{{ course.category }}">
+                <span class="thumb-initial">{{ course.title|first|upper }}</span>
+                <span class="thumb-cat">{{ course.category }}</span>
+            </div>
+            <div class="price-block">
+                {% if course.is_free %}
+                    <span class="price-now lg">Free</span>
+                {% else %}
+                    <span class="price-now lg">₹{{ course.effective_price|floatformat:0 }}</span>
+                    {% if course.discount_price and course.discount_price > 0 %}
+                        <span class="price-was">₹{{ course.price|floatformat:0 }}</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% if is_enrolled %}
+                <a href="{% url 'courses:course_learn' slug=course.slug %}" class="btn btn-primary btn-block">Continue Learning</a>
+                <p class="muted small center">You are enrolled in this course</p>
+            {% elif course.is_free %}
+                <a href="{% url 'courses:checkout' slug=course.slug %}" class="btn btn-primary btn-block">Enroll Free</a>
+            {% else %}
+                <a href="{% url 'courses:checkout' slug=course.slug %}" class="btn btn-primary btn-block">Buy Course</a>
+            {% endif %}
+            <ul class="buy-features">
+                <li>{{ lessons|length }} lessons</li>
+                <li>{{ course.duration }} of content</li>
+                <li>Lifetime access</li>
+            </ul>
+        </aside>
+    </div>
+</section>
+
+<section class="container section tabs-section">
+    <div class="tabs">
+        <button class="tab active" data-tab="curriculum">Curriculum</button>
+        <button class="tab" data-tab="reviews">Reviews ({{ course.rating_count }})</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-curriculum">
+        <h2>Course content</h2>
+        <ol class="lesson-list">
+            {% for lesson in lessons %}
+                <li>
+                    <span class="lesson-order">{{ forloop.counter }}</span>
+                    <div>
+                        <strong>{{ lesson.title }}</strong>
+                        <p class="muted small">{{ lesson.description }}</p>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="muted">Lessons coming soon.</li>
+            {% endfor %}
+        </ol>
+    </div>
+
+    <div class="tab-panel" id="tab-reviews">
+        <h2>Student reviews</h2>
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'courses:add_review' slug=course.slug %}" class="review-form card">
+                {% csrf_token %}
+                <h3>Write a review</h3>
+                <label class="muted small">Rating</label>
+                <div class="rating-input">
+                    {% for choice in review_form.rating %}
+                        <label>{{ choice.tag }} <span>{{ choice.choice_label }}</span></label>
+                    {% endfor %}
+                </div>
+                <label class="muted small">Comment</label>
+                <textarea name="comment" rows="3" placeholder="Share your experience..."></textarea>
+                <button type="submit" class="btn btn-primary btn-sm">Submit review</button>
+            </form>
+        {% else %}
+            <p class="muted"><a href="{% url 'accounts:login' %}?next={{ request.path }}">Log in</a> to write a review.</p>
+        {% endif %}
+
+        <div class="review-list">
+            {% for review in reviews %}
+                <div class="review-item card">
+                    <div class="review-head">
+                        <div class="avatar">{{ review.user.username|first|upper }}</div>
+                        <div>
+                            <strong>{{ review.user.username }}</strong>
+                            <div class="muted small">{{ review.created_at|date:"M j, Y" }}</div>
+                        </div>
+                        <span class="stars right">{{ review.rating }} ★</span>
+                    </div>
+                    <p>{{ review.comment }}</p>
+                </div>
+            {% empty %}
+                <p class="muted">No reviews yet. Be the first to review this course.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

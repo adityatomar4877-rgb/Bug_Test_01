@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout — {{ course.title }}{% endblock %}
+
+{% block content %}
+<section class="auth-wrap">
+    <div class="checkout-card card">
+        <div class="auth-head">
+            <span class="chip">{{ course.category }}</span>
+            <h1>Checkout</h1>
+            <p class="muted">{{ course.title }}</p>
+        </div>
+
+        <div class="checkout-summary">
+            <div class="checkout-row">
+                <span>Original Price</span>
+                <span>₹{{ course.price|floatformat:0 }}</span>
+            </div>
+            <div class="checkout-row">
+                <span>Discount</span>
+                <span class="muted">− ₹{{ discount_amount|floatformat:0 }}</span>
+            </div>
+            <div class="checkout-row checkout-total">
+                <span>Final Price</span>
+                <strong>₹{{ final_price|floatformat:0 }}</strong>
+            </div>
+        </div>
+
+        <form method="post" class="checkout-form">
+            {% csrf_token %}
+            <p class="muted small center">This is a demo checkout. No real payment is processed.</p>
+            <button type="submit" class="btn btn-primary btn-block">Purchase Course</button>
+        </form>
+        <a href="{% url 'courses:course_detail' slug=course.slug %}" class="btn btn-ghost btn-block btn-sm">Back to course</a>
+    </div>
+</section>
+{% endblock %}

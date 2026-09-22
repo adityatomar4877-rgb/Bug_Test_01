@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SkillForge — Learn skills. Build your future.{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav container">
+            <a href="{% url 'home' %}" class="brand">
+                <span class="brand-mark">SF</span>
+                <span class="brand-name">SkillForge</span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links" id="navLinks">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'courses:course_list' %}" class="nav-link">Courses</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'courses:my_courses' %}" class="nav-link">My Learning</a>
+                    <a href="{% url 'accounts:dashboard' %}" class="nav-link">Profile</a>
+                    <form method="post" action="{% url 'accounts:logout' %}" class="nav-form">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link nav-link-btn">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="nav-link">Login</a>
+                    <a href="{% url 'accounts:register' %}" class="nav-link nav-link-primary">Register</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main class="site-main">
+        {% if messages %}
+            <div class="toast-container">
+                {% for message in messages %}
+                    <div class="toast toast-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <div class="brand">
+                    <span class="brand-mark">SF</span>
+                    <span class="brand-name">SkillForge</span>
+                </div>
+                <p class="muted">Learn skills. Build your future.</p>
+            </div>
+            <div>
+                <h4>Explore</h4>
+                <a href="{% url 'courses:course_list' %}">All Courses</a>
+                <a href="{% url 'home' %}">Home</a>
+            </div>
+            <div>
+                <h4>Account</h4>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'courses:my_courses' %}">My Learning</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">Login</a>
+                    <a href="{% url 'accounts:register' %}">Register</a>
+                {% endif %}
+            </div>
+            <div>
+                <h4>Categories</h4>
+                <a href="{% url 'courses:course_list' %}?category=Python">Python</a>
+                <a href="{% url 'courses:course_list' %}?category=Web+Development">Web Development</a>
+                <a href="{% url 'courses:course_list' %}?category=AI">AI</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="muted small">&copy; {% now "Y" %} SkillForge. Built for a debugging exercise.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
