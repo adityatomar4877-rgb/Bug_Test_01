@@ -1,125 +1,192 @@
 # SkillForge — Online Course Platform
 
-> Learn skills. Build your future.
+> **Learn skills. Build your future.**
 
-SkillForge is a small but polished e-learning platform built with Django. Users can
+SkillForge is a small, polished e-learning platform built with Django. Users can
 browse courses, search and filter them, purchase (fake checkout), enroll, watch
 lessons, track progress, and leave reviews.
 
 > ⚠️ **This project is a debugging exercise.** It intentionally contains exactly
 > **12 intermediate-level logical bugs**. The site runs normally and most features
 > appear to work — the bugs only surface during specific actions. See the
-> [Bug Documentation](#bug-documentation) section to read the solutions (after you
-> have tried to find them yourself).
+> [Bug Documentation](#bug-documentation) section for the full list (after you have
+> tried to find them yourself).
 
 ---
 
-## Project
+## Tech Stack
 
-SkillForge — Online Course Platform: a debugging exercise containing 12 intentional
-logical bugs for students to find and fix.
+| Layer      | Technology                              |
+| ---------- | --------------------------------------- |
+| Backend    | Python 3 · Django · Django ORM          |
+| Database   | SQLite (single file, no server needed)  |
+| Frontend   | HTML5 · CSS3 · Vanilla JavaScript      |
+| Templates  | Django Templates                        |
+| Auth       | Django built-in authentication          |
 
-## Stack
-
-- Python 3
-- Django
-- SQLite
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- Django Templates
-- Django ORM
+No external services, no API keys, no payment gateway — the whole project is
+self-contained.
 
 ## Features
 
-- Authentication (register / login / logout)
-- Course browsing with a polished landing page
-- Search by title
-- Category and price filtering, and sorting
-- Course detail pages with curriculum and reviews
-- Fake checkout / enrollment
-- Student dashboard and "My Learning" page
-- Lesson viewing and "Mark as Complete" progress tracking
-- Reviews and ratings
+- **Authentication** — register, login, logout
+- **Course catalog** — polished landing page with popular courses
+- **Search & filter** — search by title, filter by category and price, sort by
+  popularity / price / date / rating
+- **Course detail** — curriculum, lessons, reviews, ratings
+- **Checkout** — a fake, no-payment checkout that creates an enrollment
+- **Dashboard** — stats (enrolled / completed / progress) and "continue learning"
+- **Learning page** — lesson list, video placeholder, "Mark as Complete"
+- **Progress tracking** — per-lesson completion with a progress bar
+- **Reviews** — star ratings and comments
+- **Admin** — full Django admin for all models
 
-## Getting Started
+## Prerequisites
 
-The project is lightweight and has no bundled virtual environment. Just use a
-Python 3 interpreter that has Django installed (or install it yourself).
+- **Python 3.10+** (3.11 or 3.12 recommended)
+- **pip** (comes with Python)
+- Internet access only for the one-time `pip install`
+
+## Quick Start
+
+Open a terminal in the project folder (`Bug_django/`) and run:
 
 ```bash
-# 1. (Optional) create and activate a virtual environment
+# 1. (Recommended) create and activate a virtual environment
 python -m venv venv
-# Windows:
+#   Windows:
 venv\Scripts\activate
-# macOS/Linux:
+#   macOS / Linux:
 source venv/bin/activate
 
-# 2. Install dependencies (Django + Pillow)
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Apply migrations and load sample data
+# 3. Apply database migrations (creates db.sqlite3)
 python manage.py migrate
+
+# 4. Load sample data (courses, lessons, demo users, reviews)
 python manage.py seed_data
 
-# 4. Run the development server
+# 5. Start the development server
 python manage.py runserver
 ```
 
-Then open <http://127.0.0.1:8000/>.
+Then open **<http://127.0.0.1:8000/>** in your browser.
 
-> Only two small dependencies are required: **Django** and **Pillow** (Pillow is only
-> used for the optional course-thumbnail uploads in the admin). The database is a
-> single ~0.2 MB SQLite file.
+> **Already have Django installed globally?** You can skip the virtual environment
+> and just run steps 2–5 with your system Python. Only **Django** and **Pillow** are
+> needed (Pillow is required because the models use image fields).
 
-### Demo accounts (created by `seed_data`)
+## Demo Accounts
 
-| Username  | Password     | Role                |
-| -------- | ------------ | ------------------- |
-| student  | student123   | Regular student     |
-| staff    | staff123     | Staff user          |
-| admin    | admin123     | Superuser / admin   |
-| reviewer | reviewer123  | Regular student     |
+Created automatically by `python manage.py seed_data`:
 
-The admin site is available at `/admin/` (log in with `admin` / `admin123`).
+| Username  | Password     | Role               | Notes                         |
+| -------- | ------------ | ------------------ | ----------------------------- |
+| `admin`    | `admin123`    | Superuser / admin   | Full Django admin access      |
+| `staff`    | `staff123`    | Staff user          | Has admin-site access         |
+| `student`  | `student123`  | Regular student     | Enrolled in 2 courses         |
+| `reviewer` | `reviewer123` | Regular student     | Enrolled in 1 course + review |
+
+**Django admin** is at <http://127.0.0.1:8000/admin/> — log in with `admin` / `admin123`.
 
 ## Project Structure
 
 ```text
-skillforge/
+Bug_django/
 ├── manage.py
 ├── requirements.txt
 ├── README.md
-├── skillforge/            # project package (settings, urls, wsgi, asgi)
-├── accounts/             # auth: register, login, logout, dashboard
-├── courses/              # courses, lessons, enrollment, reviews, checkout
-│   └── management/commands/seed_data.py
-├── templates/            # all HTML templates
-└── static/               # CSS + JS
+├── db.sqlite3                 # generated after migrate (SQLite database)
+│
+├── skillforge/                # Django project package
+│   ├── settings.py            # configuration
+│   ├── urls.py                # root URL conf
+│   ├── wsgi.py
+│   └── asgi.py
+│
+├── accounts/                  # authentication app
+│   ├── models.py              # Profile model
+│   ├── views.py               # register, login, logout, dashboard
+│   ├── forms.py               # RegistrationForm, LoginForm
+│   ├── urls.py
+│   └── admin.py
+│
+├── courses/                   # courses app
+│   ├── models.py              # Course, Lesson, Enrollment, LessonCompletion, Review
+│   ├── views.py               # catalog, detail, checkout, learning, reviews
+│   ├── forms.py               # ReviewForm
+│   ├── urls.py
+│   ├── admin.py
+│   ├── tests.py               # automated tests
+│   └── management/commands/
+│       └── seed_data.py        # loads sample courses, lessons, users
+│
+├── templates/                 # all HTML templates
+│   ├── base.html              # layout + navbar + footer
+│   ├── home.html
+│   ├── courses.html
+│   ├── course_detail.html
+│   ├── course_learn.html
+│   ├── checkout.html
+│   ├── dashboard.html
+│   ├── my_courses.html
+│   ├── login.html
+│   ├── register.html
+│   └── _course_card.html      # reusable course card partial
+│
+└── static/                    # static assets
+    ├── css/style.css
+    └── js/main.js
 ```
 
-## Models
+## Data Models
 
-- **Course** — title, slug, description, instructor, category, price, discount_price,
-  thumbnail, duration, created_at, is_published.
-- **Lesson** — course (FK), title, description, video_url, order.
-- **Enrollment** — user (FK), course (FK), enrolled_at, progress, completed.
-- **LessonCompletion** — user (FK), lesson (FK), completed_at (tracks per-user lesson
-  completion).
-- **Review** — user (FK), course (FK), rating (1–5), comment, created_at.
-- **Profile** — optional user profile (bio, avatar).
+| Model              | Purpose                              | Key fields                                              |
+| ------------------ | ------------------------------------ | ------------------------------------------------------ |
+| `Course`           | A sellable course                    | title, slug, category, price, discount_price, duration |
+| `Lesson`           | A lesson inside a course             | course (FK), title, video_url, order                   |
+| `Enrollment`       | A user's purchase of a course        | user (FK), course (FK), progress, completed            |
+| `LessonCompletion` | Per-user lesson completion record    | user (FK), lesson (FK), completed_at                   |
+| `Review`           | A user's rating + comment on a course | user (FK), course (FK), rating (1–5), comment        |
+| `Profile`          | Optional user bio/avatar extension   | user (FK), bio, avatar                                 |
 
-## Running the tests
+## Resetting the Database
+
+To start fresh with clean sample data:
+
+```bash
+# Delete the database file, then re-migrate and re-seed
+# Windows:
+del db.sqlite3
+# macOS / Linux:
+rm db.sqlite3
+
+python manage.py migrate
+python manage.py seed_data
+```
+
+## Running the Tests
 
 ```bash
 python manage.py test
 ```
 
-The included tests cover the normal happy-path flows (registration, login, logout,
-course browsing, search, course detail, checkout, lesson access, lesson completion,
-reviews). They are intentionally **not** written to automatically expose the 12 bugs.
+The test suite (13 tests) covers the normal happy-path flows:
 
-## Manual test checklist
+- Registration, login, logout
+- Course browsing, search, course detail
+- Checkout / enrollment
+- Lesson access and lesson completion
+- Reviews
+
+The tests are intentionally **not** written to automatically expose the 12 bugs —
+this is a debugging exercise, so the bugs must be discovered by investigation.
+
+## Manual Test Checklist
+
+Work through these to exercise the full app (and encounter the bugs):
 
 - [ ] Register a new account
 - [ ] Log in with a username + correct password
@@ -133,6 +200,34 @@ reviews). They are intentionally **not** written to automatically expose the 12 
 - [ ] Open a lesson and mark it complete
 - [ ] Watch the progress bar update
 - [ ] Submit a review on a course
+
+## Troubleshooting
+
+<details>
+<summary><b>Click to expand common issues</b></summary>
+
+**`ModuleNotFoundError: No module named 'django'`**
+You haven't installed the dependencies, or your virtual environment isn't active.
+Run `pip install -r requirements.txt` (and activate the venv first if you created
+one).
+
+**`No module named 'PIL'` (Pillow missing)**
+The models use `ImageField`, which requires Pillow. Install it:
+`pip install Pillow`.
+
+**`Error: That port is already in use.`**
+Another process is using port 8000. Run on a different port:
+`python manage.py runserver 8001`.
+
+**`Your models have changes that are not yet reflected in a migration`**
+This shouldn't happen with the included migrations. If it does, run
+`python manage.py makemigrations` then `python manage.py migrate`.
+
+**Pages look unstyled**
+Make sure `DEBUG = True` in `skillforge/settings.py` (it is by default). Django
+serves static files automatically in debug mode.
+
+</details>
 
 ---
 
